@@ -1,10 +1,8 @@
 #include <fstream>
 #include "Image.h"
-
-using namespace std;
-
+#include "ConsoleEngine.h"
 
 int main() {
-	ofstream img("picture.ppm");
-	
+	ConsoleEngine console;
+	console.run();
 }

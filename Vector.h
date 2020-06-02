@@ -64,10 +64,13 @@ public:
 	bool isEmpty() const;
 	void print() const;
 
+	T* getData();
+	const T* getData() const;
+
 	Vector<T> operator +(const Vector& other);
 	Vector<T>& operator +=(const Vector& other);
-	T& operator [](int i);
-	const T& operator [] (int i) const;
+	T& operator [](size_t i);
+	const T& operator [] (size_t i) const;
 	bool operator==(const Vector& other);
 	bool operator!=(const Vector& other);
 };
@@ -243,6 +246,16 @@ void Vector<T>::print() const
 }
 
 template <typename T>
+T* Vector<T>::getData() {
+	return this->data;
+}
+
+template <typename T>
+const T* Vector<T>::getData() const {
+	return this->data;
+}
+
+template <typename T>
 Vector<T> Vector<T>::operator +(const Vector<T>& other)
 {
 	Vector<T> result;
@@ -289,13 +302,13 @@ Vector<T>& Vector<T>::operator +=(const Vector& other)
 }
 
 template <typename T>
-T& Vector<T>::operator [](int i)
+T& Vector<T>::operator [](size_t i)
 {
 	return data[i];
 }
 
 template <typename T>
-const T& Vector<T>::operator[] (int i) const
+const T& Vector<T>::operator[] (size_t i) const
 {
 	return data[i];
 }

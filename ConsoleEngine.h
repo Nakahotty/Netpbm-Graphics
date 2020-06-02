@@ -1,7 +1,9 @@
 #include "Operation.h"
 #include "String.h"
 #include "Vector.h"
-#include "Image.h"
+#include "PBM.h"
+#include "PGM.h"
+#include "PPM.h"
 
 class ConsoleEngine {
 private:
@@ -10,7 +12,7 @@ private:
 
 	// 13 commands
 	String commands_arr[15] = { "open", "close", "save", "saveas", "help", "exit",
-								"grayschale", "monochrome", "negative", "rotate", "undo", "add", "session_info", "switch", "collage"};
+								"grayscale", "monochrome", "negative", "rotate", "undo", "add", "session_info", "switch", "collage"};
 
 	void initCommands() {
 		for (size_t i = 0; i < 15; i++) {
@@ -22,7 +24,7 @@ public:
 		initCommands();
 	}
 
-	// Starting the hotel app
+	// Starting the image app
 	void run();
 
 	// Handling text
@@ -38,4 +40,7 @@ public:
 	{
 		return pFile.peek() == ifstream::traits_type::eof();
 	}
+	
+	String getImageFormat(const String& fileName) const;
+	size_t checkImageFormat(const String& filename);
 };

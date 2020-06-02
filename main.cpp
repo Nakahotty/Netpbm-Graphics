@@ -1,8 +1,16 @@
 #include <fstream>
-#include "Image.h"
+#include "PBM.h"
 #include "ConsoleEngine.h"
 
 int main() {
-	ConsoleEngine console;
-	console.run();
+	PPM image;
+	image.formatPixelMatrix();
+
+	ofstream out("image.ppm");
+	ifstream in("image.ppm");
+
+	image.saveImage(out);
+	image.loadImage(in);
+
+	image.print();
 }

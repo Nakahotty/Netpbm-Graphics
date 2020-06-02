@@ -5,7 +5,8 @@ using namespace std;
 
 void ConsoleEngine::run() {
 	bool exited = 0;
-	// Image image;
+	
+	Image* image = nullptr;
 
 	// Files
 	ofstream out;
@@ -24,23 +25,47 @@ void ConsoleEngine::run() {
 				fileName = arguments[1];
 				fileNameOpened = fileName;
 
-				if (in.is_open() || out.is_open()) {
-					cout << "File already opened!" << endl;
-				}
-				else {
-					out.open(fileName.c_str(), ios::app);
-					in.open(fileName.c_str());
+				size_t imageFormatID = checkImageFormat(fileName);
 
-					if (!(is_empty(in))) {
-						// image.load(in)
-						in.close();
+				switch (imageFormatID) {
+				case 0:
+					image = nullptr;
+					cout << "File format must be ppm, pbm or pgm!" << endl;
+					break;
+				case 1:
+					image = new PBM();
+					break;
+				case 2:
+					image = new PGM();
+					break;
+				case 3:
+					image = new PPM();
+					break;
+				default:
+					image = nullptr;
+					cout << "Something went wrong while reading format!" << endl;
+					break;
+				}
+
+				if (image != nullptr) {
+					if (in.is_open() || out.is_open()) {
+						cout << "File already opened!" << endl;
 					}
 					else {
-						// image.save(out)
-					}
+						out.open(fileName.c_str(), ios::app);
+						in.open(fileName.c_str());
 
-					if (out.is_open()) {
-						cout << "Opening file " << fileName << "..." << endl;
+						if (!(is_empty(in))) {
+							image->loadImage(in);
+							in.close();
+						}
+						else {
+							image->saveImage(out);
+						}
+
+						if (out.is_open()) {
+							cout << "Opening file " << fileName << "..." << endl;
+						}
 					}
 				}
 			}
@@ -76,7 +101,7 @@ void ConsoleEngine::run() {
 				out.close();
 
 				out.open(fileNameOpened.c_str(), ios::trunc);
-				// image.save(out)
+				image->saveImage(out);
 			}
 			else {
 				cout << "No file is opened" << endl;
@@ -89,6 +114,7 @@ void ConsoleEngine::run() {
 
 			if (arguments.getSize() > 1 && !(arguments[1] == '\0')) {
 				cout << "Saving file as" << fileName << "..." << endl;
+				image->saveImage(out);
 			}
 			else {
 				cout << "Missing arguments!" << endl;
@@ -282,4 +308,31 @@ size_t ConsoleEngine::checkOperation(String cmd) {
 	}
 
 	return -1;
+}
+
+String ConsoleEngine::getImageFormat(const String& fileName) const
+{
+	String format;
+	size_t length = fileName.length();
+	for (size_t i = 0; i < 4; i++) {
+		format = format + fileName[length - i];
+	}
+
+	return format;
+}
+
+size_t ConsoleEngine::checkImageFormat(const String& filename)
+{
+	PBM pbm; PGM pgm; PPM ppm;
+	String format = getImageFormat(filename);
+	cout << format << endl;
+	
+	if (format == ".pbm")
+		return 1;
+	else if (format == ".pgm")
+		return 2;
+	else if (format == ".ppm")
+		return 3;
+	else
+		return 0;
 }

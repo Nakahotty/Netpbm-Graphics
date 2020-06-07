@@ -11,7 +11,7 @@ private:
 	Vector<String> commands;
 
 	// 13 commands
-	String commands_arr[15] = { "open", "close", "save", "saveas", "help", "exit",
+	String commands_arr[15] = { "load", "close", "save", "saveas", "help", "exit",
 								"grayscale", "monochrome", "negative", "rotate", "undo", "add", "session_info", "switch", "collage"};
 
 	void initCommands() {

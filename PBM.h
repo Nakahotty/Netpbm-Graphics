@@ -11,7 +11,12 @@ public:
 	void setRows(const size_t rows);	
 	void setCols(const size_t cols);
 
+	void initMatrix(Vector<Vector<size_t>>& v);
+	void clearPixelMatrix();
 	void formatPixelMatrix();
+	void formatTransposedRight();
+	void formatTransposedLeft();
+	bool isTransposed();
 	void print() const;
 
 	// Operations 
@@ -19,6 +24,8 @@ public:
 	void monochrome();
 	void negative();
 	void rotate(const String& direction);
+	void rotateRight();
+	void rotateLeft();
 	void undo();
 	void add(const Image& image);
 	void session_info();

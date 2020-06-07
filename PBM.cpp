@@ -33,6 +33,26 @@ void PBM::setCols(const size_t cols)
 	this->cols = cols;
 }
 
+void PBM::initMatrix(Vector<Vector<size_t>>& v)
+{
+	for (size_t i = 0; i < rows; i++) {
+		v.push_back(Vector<size_t>());
+
+		for (size_t j = 0; j < cols; j++) {
+			v[i].push_back(0);
+		}
+	}
+}
+
+void PBM::clearPixelMatrix()
+{
+	for (size_t i = 0; i < rows; i++) {
+		for (size_t j = 0; j < cols; j++) {
+			pixelMatrix[i][j] = 0;
+		}
+	}
+}
+
 void PBM::formatPixelMatrix()
 {
 	for (size_t i = 0; i < rows; i++) {
@@ -47,6 +67,39 @@ void PBM::formatPixelMatrix()
 	pixelMatrix[6][0] = 1;
 }
 
+void PBM::formatTransposedRight()
+{
+	for (size_t i = 0; i < rows; i++) {
+		if (i < 7)
+			pixelMatrix[4][i] = 1;
+	}
+
+	for (size_t i = 1; i < 4; i++) {
+		pixelMatrix[i][7] = 1;
+	}
+
+	pixelMatrix[0][6] = 1;
+}
+
+void PBM::formatTransposedLeft()
+{
+	for (size_t i = 0; i < cols; i++) {
+		if (i < 7)
+			pixelMatrix[4][i] = 1;
+	}
+
+	for (size_t i = 1; i < 4; i++) {
+		pixelMatrix[i][7] = 1;
+	}
+
+	pixelMatrix[0][6] = 1;
+}
+
+bool PBM::isTransposed()
+{
+	return this->rows == 6 || this->cols == 10;
+}
+
 void PBM::print() const
 {
 	cout << this->magicNumber << endl;
@@ -55,10 +108,7 @@ void PBM::print() const
 	Image::print();
 }
 
-void PBM::grayscale()
-{
-
-}
+void PBM::grayscale() {}
 
 void PBM::monochrome()
 {
@@ -66,11 +116,69 @@ void PBM::monochrome()
 }
 
 void PBM::negative() {
-
+	for (size_t i = 0; i < rows; i++) {
+		for (size_t j = 0; j < cols; j++) {
+			if (pixelMatrix[i][j] == 0)
+				pixelMatrix[i][j] = 1;
+			else
+				pixelMatrix[i][j] = 0;
+		}
+	}
 }
 
 void PBM::rotate(const String& direction) {
+	if (strcmp(direction.c_str(), "right") == 0) {
+		rotateRight();
+	}
+	else if (strcmp(direction.c_str(), "left") == 0) {
+		rotateLeft();
+	}
+	else {
+		throw exception("Invalid command entered!");
+	}
+}
 
+void PBM::rotateRight()
+{
+	size_t temp = rows;
+	rows = cols;
+	cols = temp;
+
+	if (!isTransposed()) {
+		this->initPixelMatrix();
+		this->clearPixelMatrix();
+		this->formatPixelMatrix();
+	}
+	else {
+
+		Vector<Vector<size_t>> newPixels;
+		this->initMatrix(newPixels);
+
+		this->pixelMatrix = newPixels;
+		this->formatTransposedRight();
+	}
+
+}
+
+void PBM::rotateLeft()
+{
+	size_t temp = rows;
+	rows = cols;
+	cols = temp;
+
+	if (!isTransposed()) {
+		this->initPixelMatrix();
+		this->clearPixelMatrix();
+		this->formatPixelMatrix();
+	}
+	else {
+
+		Vector<Vector<size_t>> newPixels;
+		this->initMatrix(newPixels);
+
+		this->pixelMatrix = newPixels;
+		this->formatTransposedRight();
+	}
 }
 
 void PBM::undo() {

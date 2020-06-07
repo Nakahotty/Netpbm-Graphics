@@ -36,6 +36,26 @@ void PGM::setCols(const size_t cols)
 	this->cols = cols;
 }
 
+void PGM::initMatrix(Vector<Vector<size_t>>& v)
+{
+	for (size_t i = 0; i < rows; i++) {
+		v.push_back(Vector<size_t>());
+
+		for (size_t j = 0; j < cols; j++) {
+			v[i].push_back(0);
+		}
+	}
+}
+
+void PGM::clearPixelMatrix()
+{
+	for (size_t i = 0; i < rows; i++) {
+		for (size_t j = 0; j < cols; j++) {
+			pixelMatrix[i][j] = 0;
+		}
+	}
+}
+
 void PGM::formatPixelMatrix()
 {
 	size_t pixelValue = maxValue;
@@ -70,8 +90,6 @@ void PGM::formatPixelMatrix()
 
 	pixelValue -= 4;
 
-	// FIXXXXXXXXX
-
 	for (size_t j = 0; j < 4; j++) {
 		pixelMatrix[1][7 + j] = pixelValue;
 		pixelMatrix[5][7 + j] = pixelValue;
@@ -105,6 +123,145 @@ void PGM::formatPixelMatrix()
 	}	
 }
 
+void PGM::formatTransposedRight()
+{
+	size_t pixelValue = maxValue;
+
+	// P
+	for (size_t j = 0; j < 4; j++) {
+		pixelMatrix[19+j][1] = pixelValue;
+		pixelMatrix[19+j][3] = pixelValue;
+
+		pixelMatrix[19][j+2] = pixelValue;
+
+		if (j == 3)
+			pixelMatrix[19+j][2] = pixelValue;
+	}
+
+	pixelValue -= 4;
+
+	// E E
+	for (size_t j = 0; j < 4; j++) {
+		pixelMatrix[13+j][1] = pixelValue;
+		pixelMatrix[13+j][5] = pixelValue;
+	}
+
+	for (size_t k = 2; k < 6; k++) {
+		pixelMatrix[13][k] = pixelValue;
+
+		if (k == 3) {
+			pixelMatrix[14][k] = pixelValue;
+			pixelMatrix[15][k] = pixelValue;
+		}
+	}
+
+	pixelValue -= 4;
+
+	for (size_t j = 0; j < 4; j++) {
+		pixelMatrix[7+j][1] = pixelValue;
+		pixelMatrix[7+j][5] = pixelValue;
+	}
+
+	for (size_t k = 2; k < 5; k++) {
+		pixelMatrix[7][k] = pixelValue;
+
+		if (k == 3) {
+			pixelMatrix[8][k] = pixelValue;
+			pixelMatrix[9][k] = pixelValue;
+		}
+	}
+
+	pixelValue -= 4;
+
+
+	// F
+	for (size_t j = 1; j < 5; j++) {
+		pixelMatrix[j][1] = pixelValue;
+		pixelMatrix[1][j] = pixelValue;
+
+		if (j == 3) {
+			pixelMatrix[2][j] = pixelValue;
+			pixelMatrix[3][j] = pixelValue;
+		}
+
+		if (j == 4) {
+			pixelMatrix[1][j+1] = pixelValue;
+		}
+	}
+}
+
+void PGM::formatTransposedLeft()
+{
+	size_t pixelValue = maxValue;
+
+	// P
+	for (size_t j = 0; j < 4; j++) {
+		pixelMatrix[19 + j][1] = pixelValue;
+		pixelMatrix[19 + j][3] = pixelValue;
+
+		pixelMatrix[19][j + 2] = pixelValue;
+
+		if (j == 3)
+			pixelMatrix[19 + j][2] = pixelValue;
+	}
+
+	pixelValue -= 4;
+
+	// E E
+	for (size_t j = 0; j < 4; j++) {
+		pixelMatrix[13 + j][1] = pixelValue;
+		pixelMatrix[13 + j][5] = pixelValue;
+	}
+
+	for (size_t k = 2; k < 6; k++) {
+		pixelMatrix[13][k] = pixelValue;
+
+		if (k == 3) {
+			pixelMatrix[14][k] = pixelValue;
+			pixelMatrix[15][k] = pixelValue;
+		}
+	}
+
+	pixelValue -= 4;
+
+	for (size_t j = 0; j < 4; j++) {
+		pixelMatrix[7 + j][1] = pixelValue;
+		pixelMatrix[7 + j][5] = pixelValue;
+	}
+
+	for (size_t k = 2; k < 5; k++) {
+		pixelMatrix[7][k] = pixelValue;
+
+		if (k == 3) {
+			pixelMatrix[8][k] = pixelValue;
+			pixelMatrix[9][k] = pixelValue;
+		}
+	}
+
+	pixelValue -= 4;
+
+
+	// F
+	for (size_t j = 1; j < 5; j++) {
+		pixelMatrix[j][1] = pixelValue;
+		pixelMatrix[1][j] = pixelValue;
+
+		if (j == 3) {
+			pixelMatrix[2][j] = pixelValue;
+			pixelMatrix[3][j] = pixelValue;
+		}
+
+		if (j == 4) {
+			pixelMatrix[1][j + 1] = pixelValue;
+		}
+	}
+}
+
+bool PGM::isTransposed()
+{
+	return this->rows == 24 || this->cols == 7;
+}
+
 void PGM::print() const
 {
 	cout << this->magicNumber << endl;
@@ -135,11 +292,64 @@ void PGM::monochrome()
 }
 
 void PGM::negative() {
-
+	for (size_t i = 0; i < rows; i++) {
+		for (size_t j = 0; j < cols; j++) {
+			pixelMatrix[i][j] = maxValue - pixelMatrix[i][j];
+		}
+	}
 }
 
 void PGM::rotate(const String& direction) {
+	if (strcmp(direction.c_str(), "right") == 0) {
+		this->rotateRight();
+	}
+	else if (strcmp(direction.c_str(), "left") == 0) {
+		this->rotateLeft();
+	}
+	else {
+		throw exception("Invalid command entered!");
+	}
+}
 
+void PGM::rotateRight()
+{
+	size_t temp = rows;
+	rows = cols;
+	cols = temp;
+
+	if (!isTransposed()) {
+		this->initPixelMatrix();
+		this->clearPixelMatrix();
+		this->formatPixelMatrix();
+	}
+	else {
+		Vector<Vector<size_t>> newPixels;
+		this->initMatrix(newPixels);
+
+		this->pixelMatrix = newPixels;
+		this->formatTransposedRight();
+	}
+}
+
+void PGM::rotateLeft()
+{
+	size_t temp = rows;
+	rows = cols;
+	cols = temp;
+
+	if (!isTransposed()) {
+		this->initPixelMatrix();
+		this->clearPixelMatrix();
+		this->formatPixelMatrix();
+	}
+	else {
+
+		Vector<Vector<size_t>> newPixels;
+		this->initMatrix(newPixels);
+
+		this->pixelMatrix = newPixels;
+		this->formatTransposedLeft();
+	}
 }
 
 void PGM::undo() {

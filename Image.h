@@ -32,6 +32,7 @@ public:
 	virtual void setCols(const size_t cols) = 0;
 	
 	void initPixelMatrix();
+	virtual void clearPixelMatrix() = 0;
 	virtual void formatPixelMatrix() = 0;
 
 	// Operations 
@@ -39,6 +40,8 @@ public:
 	virtual void monochrome() = 0;
 	virtual void negative() = 0;
 	virtual void rotate(const String& direction) = 0;
+	virtual void rotateRight() = 0;
+	virtual void rotateLeft() = 0;
 	virtual void undo() = 0;
 	virtual void add(const Image& image) = 0;
 	virtual void session_info() = 0;

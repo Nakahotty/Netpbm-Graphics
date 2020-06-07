@@ -37,6 +37,17 @@ void PPM::setCols(const size_t cols)
 }
 
 
+void PPM::initMatrix(Vector<Vector<size_t>>& v)
+{
+	for (size_t i = 0; i < rows; i++) {
+		v.push_back(Vector<size_t>());
+
+		for (size_t j = 0; j < cols; j++) {
+			v[i].push_back(0);
+		}
+	}
+}
+
 void PPM::initPixelMatrix()
 {
 	size_t size = rows * cols;
@@ -50,9 +61,24 @@ void PPM::initPixelMatrix()
 	}
 }
 
+void PPM::clearPixelMatrix()
+{
+	size_t size = rows * cols;
+
+	for (size_t i = 0; i < size; i++) {
+		for (size_t j = 0; j < 3; j++) {
+			pixelMatrix[i][j] = 0;
+		}
+	}
+}
+
 void PPM::formatPixelMatrix()
 {
 	size_t size = rows * cols;
+
+	/* The first column contains the Red values
+	   The second column contains the Blue values
+	   The third column contains the Green values */
 
 	// For RED,GREEN,BLUE
 	for (size_t i = 0; i < 3; i++) {
@@ -69,6 +95,67 @@ void PPM::formatPixelMatrix()
 		pixelMatrix[size - 2][i] = maxValue;
 	}
 		 
+}
+
+void PPM::formatTransposedRight()
+{
+	size_t size = rows * cols;
+
+	/* The first column contains the Red values
+	   The second column contains the Blue values
+	   The third column contains the Green values */
+
+	// For RED,GREEN,BLUE
+	for (size_t i = 0; i < 3; i++) {
+		for (size_t j = 0; j < 3; j++) {
+			if (i + j + 1 == 3) {
+				pixelMatrix[i][j] = maxValue;
+			}
+		}
+	}
+
+	// For YELLOW 
+	for (size_t i = 2; i > 0; i--) {
+		pixelMatrix[size-3][i] = maxValue;
+	}
+
+	// For WHITE
+	for (size_t i = 0; i < 3; i++) {
+		pixelMatrix[size-1][i] = maxValue;
+	}
+}
+
+void PPM::formatTransposedLeft()
+{
+	size_t size = rows * cols;
+
+	/* The first column contains the Red values
+	   The second column contains the Blue values
+	   The third column contains the Green values */
+
+	   // For RED,GREEN,BLUE
+	for (size_t i = 0; i < 3; i++) {
+		for (size_t j = 0; j < 3; j++) {
+			if (i + j + 1 == 3) {
+				pixelMatrix[i][j] = maxValue;
+			}
+		}
+	}
+
+	// For YELLOW 
+	for (size_t i = 2; i > 0; i--) {
+		pixelMatrix[size - 3][i] = maxValue;
+	}
+
+	// For WHITE
+	for (size_t i = 0; i < 3; i++) {
+		pixelMatrix[size - 1][i] = maxValue;
+	}
+}
+
+bool PPM::isTransposed()
+{
+	return this->rows == 3 || this->cols == 2;
 }
 
 void PPM::print() const
@@ -93,20 +180,75 @@ void PPM::print() const
 
 void PPM::grayscale()
 {
+	size_t size = rows * cols;
 
+	for (size_t i = 0; i < size; i++) {
+		size_t grayscaleValue = ((0.3 * pixelMatrix[i][0]) + (0.59 * pixelMatrix[i][1]) + (0.11 * pixelMatrix[i][2]));
+
+		pixelMatrix[i][0] = grayscaleValue;
+		pixelMatrix[i][1] = grayscaleValue;
+		pixelMatrix[i][2] = grayscaleValue;
+	}
 }
 
 void PPM::monochrome()
 {
-
+	this->clearPixelMatrix();
+	this->formatPixelMatrix();
 }
 
 void PPM::negative() {
-
+	for (size_t i = 0; i < rows; i++) {
+		for (size_t j = 0; j < cols; j++) {
+			pixelMatrix[i][j] = maxValue - pixelMatrix[i][j];
+		}
+	}
 }
 
 void PPM::rotate(const String& direction) {
+	if (strcmp(direction.c_str(), "right") == 0) {
+		this->rotateRight();
+	}
+	else if (strcmp(direction.c_str(), "left") == 0) {
+		this->rotateLeft();
+	}
+	else {
+		throw exception("Invalid command entered!");
+	}
+}
 
+void PPM::rotateRight()
+{
+	size_t temp = rows;
+	rows = cols;
+	cols = temp;
+
+	if (!isTransposed()) {
+		this->initPixelMatrix();
+		this->clearPixelMatrix();
+		this->formatPixelMatrix();
+	}
+	else {
+		this->clearPixelMatrix();
+		this->formatTransposedRight();
+	}
+}
+
+void PPM::rotateLeft()
+{
+	size_t temp = rows;
+	rows = cols;
+	cols = temp;
+	
+	if (!isTransposed()) {
+		this->initPixelMatrix();
+		this->clearPixelMatrix();
+		this->formatPixelMatrix();
+	}
+	else {
+		this->clearPixelMatrix();
+		this->formatTransposedLeft();
+	}
 }
 
 void PPM::undo() {

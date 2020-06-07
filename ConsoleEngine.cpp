@@ -20,7 +20,7 @@ void ConsoleEngine::run() {
 
 		switch (checkOperation(cmd)) {
 		case 1:
-			// Open
+			// Load
 			if (arguments.getSize() > 1 && !(arguments[1] == '\0')) {
 				fileName = arguments[1];
 				fileNameOpened = fileName;
@@ -49,7 +49,7 @@ void ConsoleEngine::run() {
 
 				if (image != nullptr) {
 					if (in.is_open() || out.is_open()) {
-						cout << "File already opened!" << endl;
+						cout << "File already loaded!" << endl;
 					}
 					else {
 						out.open(fileName.c_str(), ios::app);
@@ -64,7 +64,7 @@ void ConsoleEngine::run() {
 						}
 
 						if (out.is_open()) {
-							cout << "Opening file " << fileName << "..." << endl;
+							cout << "Loading file " << fileName << "..." << endl;
 						}
 					}
 				}

@@ -4,6 +4,7 @@
 class PGM : public Image {
 private:
 	size_t maxValue;
+	size_t pixelValue;
 public:
 	PGM();
 	PGM(const PGM& other);
@@ -28,10 +29,9 @@ public:
 	void rotateRight();
 	void rotateLeft();
 	void undo();
-	void add(const Image& image);
-	void session_info();
-	void _switch(const Session& session);
 	void collage(const String& direction, const Image& image1, const Image& image2, Image* outImage);
+
+	void previousState();
 
 	// File input and output
 	ostream& saveImage(ostream& out) const;

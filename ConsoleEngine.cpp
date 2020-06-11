@@ -7,6 +7,7 @@ void ConsoleEngine::run() {
 	bool exited = 0;
 	
 	Image* image = nullptr;
+	Session s;
 
 	// Files
 	ofstream out;
@@ -27,25 +28,7 @@ void ConsoleEngine::run() {
 
 				size_t imageFormatID = checkImageFormat(fileName);
 
-				switch (imageFormatID) {
-				case 0:
-					image = nullptr;
-					cout << "File format must be ppm, pbm or pgm!" << endl;
-					break;
-				case 1:
-					image = new PBM();
-					break;
-				case 2:
-					image = new PGM();
-					break;
-				case 3:
-					image = new PPM();
-					break;
-				default:
-					image = nullptr;
-					cout << "Something went wrong while reading format!" << endl;
-					break;
-				}
+				matchFormat(imageFormatID, image);
 
 				if (image != nullptr) {
 					if (in.is_open() || out.is_open()) {
@@ -64,13 +47,16 @@ void ConsoleEngine::run() {
 						}
 
 						if (out.is_open()) {
-							cout << "Loading file " << fileName << "..." << endl;
+							cout << "Session with ID: " << s.getID() << " started" << endl;
+							s.addImage(image);
+							s.addDirectory(fileName);
+							cout << "Image \"" << fileName << "\" added" << endl;
 						}
 					}
 				}
 			}
 			else {
-				cout << "Missing arguments!" << endl;
+				cout << "Missing or invalid arguments!" << endl;
 			}
 
 			break;
@@ -79,7 +65,6 @@ void ConsoleEngine::run() {
 			if (arguments.getSize() > 1 && !(arguments[1] == '\0')) {
 				fileName = arguments[1];
 
-				// нулирай хотела
 				if (out.is_open()) {
 					cout << "Closing file " << fileName << "..." << endl;
 					out.close();
@@ -97,11 +82,8 @@ void ConsoleEngine::run() {
 		case 3:
 			// Save
 			if (out.is_open()) {
-				cout << "Saving file..." << endl;
-				out.close();
-
-				out.open(fileNameOpened.c_str(), ios::trunc);
-				image->saveImage(out);
+				cout << "Saving files..." << endl;
+				s.saveImages(out);
 			}
 			else {
 				cout << "No file is opened" << endl;
@@ -113,7 +95,7 @@ void ConsoleEngine::run() {
 			fileName = arguments[1];
 
 			if (arguments.getSize() > 1 && !(arguments[1] == '\0')) {
-				cout << "Saving file as" << fileName << "..." << endl;
+				cout << "Saving files as" << fileName << "..." << endl;
 				image->saveImage(out);
 			}
 			else {
@@ -145,7 +127,8 @@ void ConsoleEngine::run() {
 		case 7:
 			// Grayscale
 			if (out.is_open()) {
-				
+				String transformation = arguments[0];
+				s.transformImages(transformation);
 			}
 			else {
 				cout << "You have to open a file to enter this command!" << endl;
@@ -155,7 +138,8 @@ void ConsoleEngine::run() {
 		case 8:
 			// Monochrome
 			if (out.is_open()) {
-				
+				String transformation = arguments[0];
+				s.transformImages(transformation);
 			}
 			else {
 				cout << "You have to open a file to enter this command!" << endl;
@@ -165,7 +149,8 @@ void ConsoleEngine::run() {
 		case 9:
 			// Negative
 			if (out.is_open()) {
-
+				String transformation = arguments[0];
+				s.transformImages(transformation);
 			}
 			else {
 				cout << "You have to open a file to enter this command!" << endl;
@@ -175,7 +160,9 @@ void ConsoleEngine::run() {
 		case 10:
 			// Rotate
 			if (out.is_open()) {
-
+				String rotation = arguments[0] + arguments[1];
+				cout << rotation << endl;
+				s.transformImages(rotation);
 			}
 			else {
 				cout << "You have to open a file to enter this command!" << endl;
@@ -185,7 +172,8 @@ void ConsoleEngine::run() {
 		case 11:
 			// Undo
 			if (out.is_open()) {
-
+				String transformation = arguments[0];
+				s.transformImages(transformation);
 			}
 			else {
 				cout << "You have to open a file to enter this command!" << endl;
@@ -195,7 +183,16 @@ void ConsoleEngine::run() {
 		case 12:
 			// Add
 			if (out.is_open()) {
+				Image* added_img = nullptr;
+				fileName = arguments[1];
+				cout << fileName << endl;
+				s.addDirectory(fileName);
 
+				size_t addedImgID = checkImageFormat(fileName);
+				matchFormat(addedImgID, added_img);
+
+				s.addImage(added_img);
+				cout << "Image \"" << fileName << "\" added" << endl;
 			}
 			else {
 				cout << "You have to open a file to enter this command!" << endl;
@@ -205,7 +202,7 @@ void ConsoleEngine::run() {
 		case 13:
 			// Session info
 			if (out.is_open()) {
-
+				s.session_info();
 			}
 			else {
 				cout << "You have to open a file to enter this command!" << endl;
@@ -233,6 +230,15 @@ void ConsoleEngine::run() {
 				cout << "You have to open a file to enter this command!" << endl;
 			}
 
+			break;
+		case 16:
+			// Loaded images
+			if (out.is_open()) {
+				s.getImagesInSession();
+			}
+			else {
+				cout << "You have to open a file to enter this command!" << endl;
+			}
 			break;
 		default:
 			cout << "Invalid command entered!" << endl;
@@ -300,7 +306,7 @@ size_t ConsoleEngine::toInt(String txt)
 size_t ConsoleEngine::checkOperation(String cmd) {
 	Vector<String> cmdParts = split(cmd);
 
-	for (size_t i = 0; i < 15; i++) {
+	for (size_t i = 0; i < 16; i++) {
 		if (cmdParts[0] == commands_arr[i]) {
 			return i + 1;
 		}
@@ -310,11 +316,34 @@ size_t ConsoleEngine::checkOperation(String cmd) {
 	return -1;
 }
 
+void ConsoleEngine::matchFormat(size_t formatID, Image*& image)
+{
+	switch (formatID) {
+	case 0:
+		image = nullptr;
+		cout << "File format must be ppm, pbm or pgm!" << endl;
+		break;
+	case 1:
+		image = new PBM();
+		break;
+	case 2:
+		image = new PGM();
+		break;
+	case 3:
+		image = new PPM();
+		break;
+	default:
+		image = nullptr;
+		cout << "Something went wrong while reading format!" << endl;
+		break;
+	}
+}
+
 String ConsoleEngine::getImageFormat(const String& fileName) const
 {
 	String format;
 	size_t length = fileName.length();
-	for (size_t i = 0; i < 4; i++) {
+	for (size_t i = 4; i > 0; i--) {
 		format = format + fileName[length - i];
 	}
 
@@ -325,7 +354,6 @@ size_t ConsoleEngine::checkImageFormat(const String& filename)
 {
 	PBM pbm; PGM pgm; PPM ppm;
 	String format = getImageFormat(filename);
-	cout << format << endl;
 	
 	if (format == ".pbm")
 		return 1;

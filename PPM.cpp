@@ -8,6 +8,7 @@ PPM::PPM()
 	this->maxValue = 255;
 
 	this->initPixelMatrix();
+	this->formatPixelMatrix();
 }
 
 PPM::PPM(const PPM& other)
@@ -252,23 +253,15 @@ void PPM::rotateLeft()
 }
 
 void PPM::undo() {
-
-}
-
-void PPM::add(const Image& image) {
-
-}
-
-void PPM::session_info() {
-
-}
-
-void PPM::_switch(const Session& session) {
-
+	this->previousState();
 }
 
 void PPM::collage(const String& direction, const Image& image1, const Image& image2, Image* outImage) {
 
+}
+
+void PPM::previousState() {
+	this->rotateRight();
 }
 
 ostream& PPM::saveImage(ostream& out) const

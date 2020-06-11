@@ -10,12 +10,12 @@ private:
 	String cmd;
 	Vector<String> commands;
 
-	// 13 commands
-	String commands_arr[15] = { "load", "close", "save", "saveas", "help", "exit",
-								"grayscale", "monochrome", "negative", "rotate", "undo", "add", "session_info", "switch", "collage"};
+	// 15 commands
+	String commands_arr[16] = { "load", "close", "save", "saveas", "help", "exit",
+								"grayscale", "monochrome", "negative", "rotate", "undo", "add", "session_info", "switch", "collage", "loaded_images"};
 
 	void initCommands() {
-		for (size_t i = 0; i < 15; i++) {
+		for (size_t i = 0; i < 16; i++) {
 			commands.push_back(commands_arr[i]);
 		}
 	}
@@ -41,6 +41,7 @@ public:
 		return pFile.peek() == ifstream::traits_type::eof();
 	}
 	
+	void matchFormat(size_t formatID, Image*& image);
 	String getImageFormat(const String& fileName) const;
 	size_t checkImageFormat(const String& filename);
 };

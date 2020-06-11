@@ -6,14 +6,17 @@ PGM::PGM()
 	this->rows = 7;
 	this->cols = 24;
 	this->maxValue = 15;
+	this->pixelValue = maxValue;
 
 	this->initPixelMatrix();
+	this->formatPixelMatrix();
 }
 
 PGM::PGM(const PGM& other)
 {
 	this->copy(other);
 	this->maxValue = other.maxValue;
+	this->pixelValue = maxValue;
 }
 
 PGM& PGM::operator=(const PGM& other)
@@ -58,7 +61,7 @@ void PGM::clearPixelMatrix()
 
 void PGM::formatPixelMatrix()
 {
-	size_t pixelValue = maxValue;
+	pixelValue = maxValue;
 
 	// P
 	for (size_t j = 0; j < 4; j++) {
@@ -121,11 +124,12 @@ void PGM::formatPixelMatrix()
 			pixelMatrix[j + 1][1] = pixelValue;
 		}
 	}	
+
 }
 
 void PGM::formatTransposedRight()
 {
-	size_t pixelValue = maxValue;
+	pixelValue = maxValue;
 
 	// P
 	for (size_t j = 0; j < 4; j++) {
@@ -173,7 +177,6 @@ void PGM::formatTransposedRight()
 
 	pixelValue -= 4;
 
-
 	// F
 	for (size_t j = 1; j < 5; j++) {
 		pixelMatrix[j][1] = pixelValue;
@@ -192,7 +195,7 @@ void PGM::formatTransposedRight()
 
 void PGM::formatTransposedLeft()
 {
-	size_t pixelValue = maxValue;
+	pixelValue = maxValue;
 
 	// P
 	for (size_t j = 0; j < 4; j++) {
@@ -240,7 +243,6 @@ void PGM::formatTransposedLeft()
 
 	pixelValue -= 4;
 
-
 	// F
 	for (size_t j = 1; j < 5; j++) {
 		pixelMatrix[j][1] = pixelValue;
@@ -281,14 +283,18 @@ void PGM::print() const
 	}
 }
 
-void PGM::grayscale()
-{
-
-}
+void PGM::grayscale() {}
 
 void PGM::monochrome()
 {
-
+	for (size_t i = 0; i < rows; i++) {
+		for (size_t j = 0; j < cols; j++) {
+			if (pixelMatrix[i][j] <= maxValue / 2)
+				pixelMatrix[i][j] = 0;
+			else 
+				pixelMatrix[i][j] = maxValue;
+		}
+	}
 }
 
 void PGM::negative() {
@@ -353,23 +359,15 @@ void PGM::rotateLeft()
 }
 
 void PGM::undo() {
-
-}
-
-void PGM::add(const Image& image) {
-
-}
-
-void PGM::session_info() {
-
-}
-
-void PGM::_switch(const Session& session) {
-
+	this->previousState();
 }
 
 void PGM::collage(const String& direction, const Image& image1, const Image& image2, Image* outImage) {
 
+}
+
+void PGM::previousState() {
+	this->rotateRight();
 }
 
 ostream& PGM::saveImage(ostream& out) const

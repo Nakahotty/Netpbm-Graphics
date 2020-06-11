@@ -5,11 +5,14 @@
 #include "String.h"
 #include "Vector.h"
 
+class Session;
+
 class Image {
 protected:
 	String magicNumber;
 	size_t cols = 0, rows = 0;
 	Vector<Vector<size_t>> pixelMatrix;
+	Vector<Vector<size_t>> previousPixelMatrix;
 
 	void copy(const Image& other) {
 		this->magicNumber = other.magicNumber;
@@ -18,7 +21,7 @@ protected:
 		this->pixelMatrix = other.pixelMatrix;
 	}
 public:
-	Image() : cols(0), rows(0) {}
+	Image() : cols(0), rows(0) { this->initPixelMatrix(); }
 
 	const String& getMagicNumber() const { return this->magicNumber; };
 	size_t getRows() const { return this->rows; };
@@ -43,14 +46,13 @@ public:
 	virtual void rotateRight() = 0;
 	virtual void rotateLeft() = 0;
 	virtual void undo() = 0;
-	virtual void add(const Image& image) = 0;
-	virtual void session_info() = 0;
-	virtual void _switch(const Session& session) = 0;
 	virtual void collage(const String& direction, const Image& image1, const Image& image2, Image* outImage) = 0;
 	
+	Vector<Vector<size_t>>& getPreviousState() { return this->previousPixelMatrix; }
+
 	// File input and output
 	virtual ostream& saveImage(ostream& out) const = 0;
 	virtual ifstream& loadImage(ifstream& in) = 0;
 	
-	void print() const;
+	virtual void print() const = 0;
 };

@@ -7,6 +7,7 @@ PBM::PBM()
 	this->cols = 6;
 	
 	this->initPixelMatrix();
+	this->formatPixelMatrix();
 }
 
 PBM::PBM(const PBM& other)
@@ -105,15 +106,19 @@ void PBM::print() const
 	cout << this->magicNumber << endl;
 	cout << "# Shows the letter J" << endl;
 	cout << this->cols << " " << this->rows << endl;
-	Image::print();
+	
+	for (size_t i = 0; i < rows; i++) {
+		for (size_t j = 0; j < cols; j++) {
+			cout << pixelMatrix[i][j] << " ";
+		}
+
+		cout << endl;
+	}
 }
 
+// Both do not effect the image in this format
 void PBM::grayscale() {}
-
-void PBM::monochrome()
-{
-
-}
+void PBM::monochrome() {}
 
 void PBM::negative() {
 	for (size_t i = 0; i < rows; i++) {
@@ -182,23 +187,16 @@ void PBM::rotateLeft()
 }
 
 void PBM::undo() {
-
-}
-
-void PBM::add(const Image& image) {
-
-}
-
-void PBM::session_info() {
-
-}
-
-void PBM::_switch(const Session& session) {
-
+	if (isTransposed())
+		this->previousState();
 }
 
 void PBM::collage(const String& direction, const Image& image1, const Image& image2, Image* outImage) {
 
+}
+
+void PBM::previousState() {
+	this->rotateRight();
 }
 
 ostream& PBM::saveImage(ostream& out) const

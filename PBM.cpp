@@ -68,6 +68,36 @@ void PBM::formatPixelMatrix()
 	pixelMatrix[6][0] = 1;
 }
 
+void PBM::formatPixelMatrix(size_t r, size_t c)
+{
+	// 1st image
+	for (size_t i = 0; i < r; i++) {
+		if (i < 7)
+			pixelMatrix[i][4] = 1;
+	}
+
+
+	for (size_t i = 1; i < 4; i++) {
+		pixelMatrix[7][i] = 1;
+		pixelMatrix[7][i] = 1;
+	}
+
+	pixelMatrix[6][0] = 1;
+
+	// 2nd image
+	for (size_t i = 0; i < r; i++) {
+		if (i < 7)
+			pixelMatrix[i][10] = 1;
+	}
+
+	for (size_t i = 1; i < 4; i++) {
+		pixelMatrix[7][i+6] = 1;
+		pixelMatrix[7][i+6] = 1;
+	}
+
+	pixelMatrix[6][6] = 1;
+}
+
 void PBM::formatTransposedRight()
 {
 	for (size_t i = 0; i < rows; i++) {
@@ -191,15 +221,11 @@ void PBM::undo() {
 		this->previousState();
 }
 
-void PBM::collage(const String& direction, const Image& image1, const Image& image2, Image* outImage) {
-
-}
-
 void PBM::previousState() {
 	this->rotateRight();
 }
 
-ostream& PBM::saveImage(ostream& out) const
+ostream& PBM::saveImage(ostream& out)
 {
 	out << magicNumber << endl;
 	out << cols << " " << rows << endl;

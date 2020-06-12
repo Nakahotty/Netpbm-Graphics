@@ -16,6 +16,7 @@ public:
 	void initMatrix(Vector<Vector<size_t>>& v);
 	void clearPixelMatrix();
 	void formatPixelMatrix();
+	void formatPixelMatrix(size_t r, size_t c);
 	void formatTransposedRight();
 	void formatTransposedLeft();
 	bool isTransposed();
@@ -29,11 +30,10 @@ public:
 	void rotateRight();
 	void rotateLeft();
 	void undo();
-	void collage(const String& direction, const Image& image1, const Image& image2, Image* outImage);
 
 	void previousState();
 
 	// File input and output
-	ostream& saveImage(ostream& out) const;
+	ostream& saveImage(ostream& out);
 	ifstream& loadImage(ifstream& in);
 };

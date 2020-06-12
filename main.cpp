@@ -3,6 +3,6 @@
 #include "ConsoleEngine.h"
 
 int main() {
-	ConsoleEngine console;
-	console.run();
+	ConsoleEngine c;
+	c.run();
 }

@@ -127,6 +127,74 @@ void PGM::formatPixelMatrix()
 
 }
 
+void PGM::formatPixelMatrix(size_t r, size_t c)
+{
+	// For collab we add the second picture by adding it 24 pixels away from the start
+	pixelValue = maxValue;
+
+	// P
+	for (size_t j = 0; j < 4; j++) {
+		pixelMatrix[1][24 + 19 + j] = pixelValue;
+		pixelMatrix[3][24 + 19 + j] = pixelValue;
+
+		pixelMatrix[j + 2][24 + 19] = pixelValue;
+
+		if (j == 3)
+			pixelMatrix[2][24 + 19 + j] = pixelValue;
+	}
+
+	pixelValue -= 4;
+
+	// E E
+	for (size_t j = 0; j < 4; j++) {
+		pixelMatrix[1][24+13 + j] = pixelValue;
+		pixelMatrix[5][24+13 + j] = pixelValue;
+	}
+
+	for (size_t k = 2; k < 5; k++) {
+		pixelMatrix[k][24+13] = pixelValue;
+
+		if (k == 3) {
+			pixelMatrix[k][24+14] = pixelValue;
+			pixelMatrix[k][24+15] = pixelValue;
+		}
+	}
+
+	pixelValue -= 4;
+
+	for (size_t j = 0; j < 4; j++) {
+		pixelMatrix[1][24 + 7 + j] = pixelValue;
+		pixelMatrix[5][24 + 7 + j] = pixelValue;
+	}
+
+	for (size_t k = 2; k < 5; k++) {
+		pixelMatrix[k][24 + 7] = pixelValue;
+
+		if (k == 3) {
+			pixelMatrix[k][24 + 7 + 1] = pixelValue;
+			pixelMatrix[k][24 + 7 + 2] = pixelValue;
+		}
+	}
+
+	pixelValue -= 4;
+
+
+	// F
+	for (size_t j = 1; j < 5; j++) {
+		pixelMatrix[1][24+j] = pixelValue;
+		pixelMatrix[j][24+1] = pixelValue;
+
+		if (j == 3) {
+			pixelMatrix[j][24+2] = pixelValue;
+			pixelMatrix[j][24+3] = pixelValue;
+		}
+
+		if (j == 4) {
+			pixelMatrix[j + 1][24+1] = pixelValue;
+		}
+	}
+}
+
 void PGM::formatTransposedRight()
 {
 	pixelValue = maxValue;
@@ -362,15 +430,11 @@ void PGM::undo() {
 	this->previousState();
 }
 
-void PGM::collage(const String& direction, const Image& image1, const Image& image2, Image* outImage) {
-
-}
-
 void PGM::previousState() {
 	this->rotateRight();
 }
 
-ostream& PGM::saveImage(ostream& out) const
+ostream& PGM::saveImage(ostream& out)
 {
 	out << this->magicNumber << endl;
 	out << this->rows << " " << this->cols << endl;
@@ -393,10 +457,11 @@ ostream& PGM::saveImage(ostream& out) const
 ifstream& PGM::loadImage(ifstream& in)
 {
 	in >> this->magicNumber;
-	in >> this->rows;
+	in >> this->rows; 
 	in.seekg(1, ios::cur);
 	in >> this->cols;
 	in.seekg(2, ios::cur);
+
 	in >> this->maxValue;
 
 	for (size_t i = 0; i < rows; i++) {

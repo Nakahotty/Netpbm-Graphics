@@ -43,6 +43,11 @@ void Session::getImagesInSession() const
 	cout << endl;
 }
 
+const Vector<Image*>& Session::getImages() const
+{
+	return this->images;
+}
+
 void Session::saveImages(ofstream& out)
 {
 	size_t size = images.getSize();
@@ -60,6 +65,26 @@ void Session::loadImages(ifstream& in)
 		in.open(directories[i].c_str());
 		images[i]->loadImage(in);
 	}
+}
+
+void Session::collage(Image*& img1, Image*& img2, Image*& out)
+{
+	size_t outRows = img1->getRows() * 2;
+	size_t outCols = img1->getCols() * 2;
+	out->setCols(outCols);
+
+	String magicNum = out->getMagicNumber();
+	if (strcmp(magicNum.c_str(), "P3") == 0) {
+		Vector<Vector<size_t>> v;
+		out->initMatrixWith(v, outRows, outCols);
+		out->clearPixelMatrix();
+		out->formatPixelMatrix(outRows, outCols);
+	}
+	else {
+		out->initPixelMatrix();
+		out->formatPixelMatrix(outRows, outCols);
+	}
+
 }
 
 void Session::addTransform(const String& transform)

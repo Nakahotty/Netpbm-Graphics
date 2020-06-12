@@ -21,9 +21,10 @@ public:
 	void session_info();
 	void _switch(const Session& other);
 	void getImagesInSession() const;
+	const Vector<Image*>& getImages() const;
 	void saveImages(ofstream& out);
 	void loadImages(ifstream& in);
-	
+	void collage(Image*& img1, Image*& img2, Image*& out);
 
 	void addTransform(const String& transform);
 	void removeTransform(const String& transform);

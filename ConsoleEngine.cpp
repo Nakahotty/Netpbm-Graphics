@@ -7,6 +7,7 @@ void ConsoleEngine::run() {
 	bool exited = 0;
 	
 	Image* image = nullptr;
+	Image* collageImg = nullptr;
 	Session s;
 
 	// Files
@@ -95,8 +96,8 @@ void ConsoleEngine::run() {
 			fileName = arguments[1];
 
 			if (arguments.getSize() > 1 && !(arguments[1] == '\0')) {
-				cout << "Saving files as" << fileName << "..." << endl;
-				image->saveImage(out);
+				cout << "Saving files..." << endl;
+				s.saveImages(out);
 			}
 			else {
 				cout << "Missing arguments!" << endl;
@@ -160,7 +161,7 @@ void ConsoleEngine::run() {
 		case 10:
 			// Rotate
 			if (out.is_open()) {
-				String rotation = arguments[0] + arguments[1];
+				String rotation = arguments[0] + " " + arguments[1];
 				cout << rotation << endl;
 				s.transformImages(rotation);
 			}
@@ -224,7 +225,33 @@ void ConsoleEngine::run() {
 			// Collage
 
 			if (out.is_open()) {
+				String filename1 = arguments[1];
+				String filename2 = arguments[2];
+				String filename3 = arguments[3];
+				ofstream collage_out(filename3.c_str());
 
+				size_t imageFormatID1 = checkImageFormat(filename1);
+				size_t imageFormatID2 = checkImageFormat(filename2);
+				size_t imageFormatID3 = checkImageFormat(filename3);
+
+				Vector<Image*> imgs = s.getImages();
+				Image* img1 = imgs[0]; Image* img2 = imgs[1];
+
+				matchFormat(imageFormatID1, img1);
+				matchFormat(imageFormatID2, img2);
+				matchFormat(imageFormatID3, collageImg);
+				
+				String magicNum1 = img1->getMagicNumber();
+				String magicNum2 = img2->getMagicNumber();
+				String magicNum3 = collageImg->getMagicNumber();
+
+				if (magicNum1 == magicNum2 && magicNum2 == magicNum3) {
+					s.collage(img1, img2, collageImg);
+					collageImg->saveImage(collage_out);
+				}
+					
+				else 
+					cout << "Cannot make a collage from different types!" << endl;
 			}
 			else {
 				cout << "You have to open a file to enter this command!" << endl;

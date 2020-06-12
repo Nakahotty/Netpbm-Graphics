@@ -35,8 +35,11 @@ public:
 	virtual void setCols(const size_t cols) = 0;
 	
 	void initPixelMatrix();
+	void initMatrixWith(Vector<Vector<size_t>>& mat, size_t r, size_t c);
+
 	virtual void clearPixelMatrix() = 0;
 	virtual void formatPixelMatrix() = 0;
+	virtual void formatPixelMatrix(size_t, size_t) = 0;
 
 	// Operations 
 	virtual void grayscale() = 0;
@@ -46,12 +49,11 @@ public:
 	virtual void rotateRight() = 0;
 	virtual void rotateLeft() = 0;
 	virtual void undo() = 0;
-	virtual void collage(const String& direction, const Image& image1, const Image& image2, Image* outImage) = 0;
 	
 	Vector<Vector<size_t>>& getPreviousState() { return this->previousPixelMatrix; }
 
 	// File input and output
-	virtual ostream& saveImage(ostream& out) const = 0;
+	virtual ostream& saveImage(ostream& out) = 0;
 	virtual ifstream& loadImage(ifstream& in) = 0;
 	
 	virtual void print() const = 0;

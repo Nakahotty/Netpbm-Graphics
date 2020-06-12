@@ -98,6 +98,43 @@ void PPM::formatPixelMatrix()
 		 
 }
 
+void PPM::formatPixelMatrix(size_t r, size_t c)
+{
+	// For first image
+	size_t size = cols;
+
+
+	// For RED,GREEN,BLUE
+	for (size_t i = 0; i < 3; i++) {
+		pixelMatrix[i][i] = maxValue;
+	}
+
+	// For YELLOW 
+	for (size_t i = 0; i < 2; i++) {
+		pixelMatrix[size - 3][i] = maxValue;
+	}
+
+	// For WHITE
+	for (size_t i = 0; i < 3; i++) {
+		pixelMatrix[size - 2][i] = maxValue;
+	}
+
+	// For second image
+	for (size_t i = 0; i < 3; i++) {
+		pixelMatrix[size+i][i] = maxValue;
+	}
+
+	// For YELLOW 
+	for (size_t i = 0; i < 2; i++) {
+		pixelMatrix[size+3][i] = maxValue;
+	}
+
+	// For WHITE
+	for (size_t i = 0; i < 3; i++) {
+		pixelMatrix[size+4][i] = maxValue;
+	}
+}
+
 void PPM::formatTransposedRight()
 {
 	size_t size = rows * cols;
@@ -256,15 +293,11 @@ void PPM::undo() {
 	this->previousState();
 }
 
-void PPM::collage(const String& direction, const Image& image1, const Image& image2, Image* outImage) {
-
-}
-
 void PPM::previousState() {
 	this->rotateRight();
 }
 
-ostream& PPM::saveImage(ostream& out) const
+ostream& PPM::saveImage(ostream& out)
 {
 	out << this->magicNumber << endl;
 	out << this->cols << " " << this->rows << endl;

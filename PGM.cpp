@@ -366,11 +366,23 @@ void PGM::monochrome()
 }
 
 void PGM::negative() {
-	for (size_t i = 0; i < rows; i++) {
-		for (size_t j = 0; j < cols; j++) {
-			pixelMatrix[i][j] = maxValue - pixelMatrix[i][j];
+	if (pixelMatrix[0][0] == maxValue - pixelMatrix[0][0]) {
+		this->clearPixelMatrix();
+		this->formatPixelMatrix();
+	}
+	else {
+		for (size_t i = 0; i < rows; i++) {
+			for (size_t j = 0; j < cols; j++) {
+				pixelMatrix[i][j] = maxValue - pixelMatrix[i][j];
+			}
 		}
 	}
+}
+
+void PGM::previousState() {
+	this->initPixelMatrix();
+	this->clearPixelMatrix();
+	this->formatPixelMatrix();
 }
 
 void PGM::rotate(const String& direction) {
@@ -428,10 +440,6 @@ void PGM::rotateLeft()
 
 void PGM::undo() {
 	this->previousState();
-}
-
-void PGM::previousState() {
-	this->rotateRight();
 }
 
 ostream& PGM::saveImage(ostream& out)

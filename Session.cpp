@@ -135,6 +135,12 @@ void Session::transformImages(const String& transform)
 
 		this->addTransform("negative");
 	}
+	else if (strcmp(transform.c_str(), "undo") == 0) {
+		for (size_t i = 0; i < size; i++) {
+			this->images[i]->undo();
+			this->transformations.pop_back();
+		}
+	}
 	else {
 		cout << "Wrong transformation entered!" << endl;
 	}

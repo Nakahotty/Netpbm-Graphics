@@ -37,6 +37,7 @@ public:
 	void initPixelMatrix();
 	void initMatrixWith(Vector<Vector<size_t>>& mat, size_t r, size_t c);
 
+	virtual bool isTransposed() = 0;
 	virtual void clearPixelMatrix() = 0;
 	virtual void formatPixelMatrix() = 0;
 	virtual void formatPixelMatrix(size_t, size_t) = 0;
